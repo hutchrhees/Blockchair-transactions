@@ -1,0 +1,2 @@
+block_id,index,hash,time,failed,type,sender,recipient,call_count,value,value_usd,internal_value,internal_value_usd,fee,fee_usd,gas_used,gas_limit,gas_price,input_hex,nonce
+19821039,98,0x2f0f7381b02f67f881095ed52f4ff62aa229980ee2294f13716356ba7ce2d56b,2024-05-07 22:02:23,False,call,0x6cd6e514725c9ffd38cdb28b5b41b7f0c472f5ce,0xd8da6bf26964af9d7eed9e03e53415d37aa96045,1,1600000000000,0.004901478125,1600000000000,0.004901478125,98741833029000,0.30248808413377876,21000,21000,4701992049,,4

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ethereum Transaction Processor</title>
+    <style>
+      /* General body styling */
+      body {
+        font-family: Arial, sans-serif; /* Makes font more modern */
+        margin: 20px;
+        background-color: #f4f4f4; /* Light grey background */
+      }
+
+      /* Styling for the table */
+      table {
+        width: 100%; /* Full width */
+        border-collapse: collapse; /* Ensures borders between cells are merged */
+        table-layout: fixed; /* Adds space above the table */
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd; /* Light grey border */
+        padding: 8px; /* Adds space around text in cells */
+        text-align: left; /* Aligns text to the left */
+        word-wrap: break-word;
+      }
+
+      th {
+        background-color: #4caf50; /* Dark green background for headers */
+        color: white; /* White text color */
+      }
+
+      /* Styling for responsive table scrolling */
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+        th,
+        td {
+          padding: 6px;
+          font-size: 14px; /* Smaller font size for small screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ethereum Wallet Transaction Processor</h1>
+    <form id="walletForm">
+      <input
+        type="text"
+        id="walletAddress"
+        placeholder="Enter wallet address"
+        required
+      />
+      <input type="date" id="startDate" placeholder="Start Date" />
+      <input type="date" id="endDate" placeholder="End Date" />
+      <button type="submit">Fetch and Process</button>
+    </form>
+    <button onclick="exportTableToCSV('export.csv')">Export to CSV</button>
+    <div id="response"></div>
+    <div class="table-container">
+      <div id="dataDisplay" style="margin-top: 20px"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("walletForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const walletAddress = document.getElementById("walletAddress").value;
+          const startDate = document.getElementById("startDate").value;
+          const endDate = document.getElementById("endDate").value;
+
+          fetch("/process", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              wallet_address: walletAddress,
+              start_date: startDate,
+              end_date: endDate,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("response").innerText =
+                data.message || data.error;
+              if (data.html_table) {
+                document.getElementById("dataDisplay").innerHTML =
+                  data.html_table;
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+
+      function exportTableToCSV(filename) {
+        var csv = [];
+        var rows = document.querySelectorAll("table tr");
+
+        for (var i = 0; i < rows.length; i++) {
+          var row = [],
+            cols = rows[i].querySelectorAll("td, th");
+
+          for (var j = 0; j < cols.length; j++)
+            row.push('"' + cols[j].innerText + '"');
+
+          csv.push(row.join(","));
+        }
+
+        // Download CSV file
+        downloadCSV(csv.join("\n"), filename);
+      }
+
+      function downloadCSV(csv, filename) {
+        var csvFile;
+        var downloadLink;
+
+        // CSV file
+        csvFile = new Blob([csv], { type: "text/csv" });
+
+        // Download link
+        downloadLink = document.createElement("a");
+
+        // File name
+        downloadLink.download = filename;
+
+        // Create a link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+
+        // Hide download link
+        downloadLink.style.display = "none";
+
+        // Add the link to DOM
+        document.body.appendChild(downloadLink);
+
+        // Click download link
+        downloadLink.click();
+      }
+    </script>
+  </body>
+</html>
